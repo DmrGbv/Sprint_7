@@ -1,6 +1,8 @@
 import com.github.javafaker.Faker;
+import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import model.CourierModel;
+import model.LoginModel;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,17 +29,32 @@ public class LoginCourierTest extends BaseAPITest {
 
     @Test
     @DisplayName("Проверка успешной авторизации курьера при заполнении обязательных полей")
+    @Description("Тест для проверки успешной авторизации курьера при заполнении обязательных полей Логин и Пароль")
     public void testLoginCourierSuccess() {
-        loginCourier(login, password)
+        LoginModel loginModel = new LoginModel(login, password);
+        loginCourier(loginModel)
                 .then().log().all()
                 .statusCode(HTTP_OK)
                 .body("id", notNullValue());
     }
 
     @Test
-    @DisplayName("Проверка возникновения ошибки при попытке авторизации с несуществующими Логином и Паролем")
-    public void testLoginCourierWithNotExistDataFail() {
-        loginCourier(login + System.currentTimeMillis(), password + System.currentTimeMillis())
+    @DisplayName("Проверка возникновения ошибки при попытке авторизации с несуществующим Логином")
+    @Description("Тест для проверки невозможности авторизации курьера при вводе НЕверных данных в поле Логин и корректными данными в поле Пароль")
+    public void testLoginCourierWithWrongLoginFail() {
+        LoginModel loginModel = new LoginModel(login + System.currentTimeMillis(), password);
+        loginCourier(loginModel)
+                .then().log().all()
+                .statusCode(HTTP_NOT_FOUND)
+                .body("message", equalTo("Учетная запись не найдена"));
+    }
+
+    @Test
+    @DisplayName("Проверка возникновения ошибки при попытке авторизации с неверным Паролем")
+    @Description("Тест для проверки невозможности авторизации курьера при вводе НЕверных данных в поле Пароль и корректными данными в поле Логин")
+    public void testLoginCourierWithWrongPasswordFail() {
+        LoginModel loginModel = new LoginModel(login, password + System.currentTimeMillis());
+        loginCourier(loginModel)
                 .then().log().all()
                 .statusCode(HTTP_NOT_FOUND)
                 .body("message", equalTo("Учетная запись не найдена"));
@@ -45,8 +62,10 @@ public class LoginCourierTest extends BaseAPITest {
 
     @Test
     @DisplayName("Проверка возникновения ошибки при попытке авторизации без передачи Логина")
+    @Description("Тест для проверки невозможности авторизации курьера при НЕ заполнении обязательного поля Логин и заполнении поля Пароль")
     public void testLoginCourierWithoutLoginFail() {
-        loginCourier(null, password)
+        LoginModel loginModel = new LoginModel(null, password);
+        loginCourier(loginModel)
                 .then().log().all()
                 .statusCode(HTTP_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для входа"));
@@ -54,8 +73,10 @@ public class LoginCourierTest extends BaseAPITest {
 
     @Test
     @DisplayName("Проверка возникновения ошибки при попытке авторизации без передачи Пароля")
+    @Description("Тест для проверки невозможности авторизации курьера при НЕ заполнении обязательного поля Пароль и заполнении поля Логин")
     public void testLoginCourierWithoutPasswordFail() {
-        loginCourier(login, null)
+        LoginModel loginModel = new LoginModel(login, null);
+        loginCourier(loginModel)
                 .then().log().all()
                 .statusCode(HTTP_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для входа"));

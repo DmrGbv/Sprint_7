@@ -1,4 +1,5 @@
 import com.github.javafaker.Faker;
+import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import model.CourierModel;
 import org.junit.After;
@@ -25,6 +26,7 @@ public class CreateCourierTest extends BaseAPITest{
 
     @Test
     @DisplayName("Проверка успешного создания курьера при заполнении всех полей")
+    @Description("Тест для проверки возможности создания курьера при передачи в ручку всех обязательных полей и получения правильного кода ответа")
     public void testCreateCourierSuccess() {
         courier = new CourierModel(login, password, firstName);
 
@@ -37,6 +39,7 @@ public class CreateCourierTest extends BaseAPITest{
 
     @Test
     @DisplayName("Проверка возникновения ошибки при попытке создания двух одинаковых курьеров")
+    @Description("Тест для проверки невозможности создания двух одинаковых курьеров с уже использующимся Логином")
     public void testCreateDuplicateCourierFail() {
         this.courier = new CourierModel(login, password, firstName);
 
@@ -51,6 +54,7 @@ public class CreateCourierTest extends BaseAPITest{
 
     @Test
     @DisplayName("Проверка возникновения ошибки при попытке создания курьера без заполнения всех обязательных полей")
+    @Description("Тест для проверки невозможности создания курьера при НЕ заполнении обязательных полей")
     public void testCreateCourierWithoutRequiredFieldsFail() {
         CourierModel courier = new CourierModel(null, null, null);
 
@@ -63,6 +67,7 @@ public class CreateCourierTest extends BaseAPITest{
 
     @Test
     @DisplayName("Проверка возникновения ошибки при попытке создания курьера без заполнения обязательного поля Логин")
+    @Description("Тест для проверки невозможности создания курьера при НЕ заполнении поля Логин")
     public void testCreateCourierWithoutLoginFail() {
         CourierModel courier = new CourierModel(null, password, firstName);
 
@@ -75,6 +80,7 @@ public class CreateCourierTest extends BaseAPITest{
 
     @Test
     @DisplayName("Проверка возникновения ошибки при попытке создания курьера без заполнения обязательного поля Пароль")
+    @Description("Тест для проверки невозможности создания курьера при НЕ заполнении поля Пароль")
     public void testCreateCourierWithoutPasswordFail() {
         CourierModel courier = new CourierModel(login, null, firstName);
 
@@ -87,6 +93,7 @@ public class CreateCourierTest extends BaseAPITest{
 
     @Test
     @DisplayName("Проверка успешного создания курьера при заполнении обязательных полей Логин и Пароль и пустом поле Имя")
+    @Description("Тест для проверки возможности создания курьера при заполнении только обязательных полей Логин и Пароль и при пустом поле Имя")
     public void testCreateCourierWithoutFirstnameSuccess() {
         courier = new CourierModel(login, password, null);
 

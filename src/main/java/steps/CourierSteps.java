@@ -4,9 +4,7 @@ import io.qameta.allure.Step;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import model.CourierModel;
-
-import java.util.HashMap;
-import java.util.Map;
+import model.LoginModel;
 
 import static data.EndpointAndUriData.*;
 import static io.restassured.RestAssured.given;
@@ -27,24 +25,21 @@ public class CourierSteps {
     }
 
     @Step("Авторизация курьера с логином {login} и паролем {password}")
-    public static Response loginCourier(String login, String password) {
-        Map<String, String> dataLogIn = new HashMap<>();
-        if (login != null) {
-            dataLogIn.put("login", login);
-        }
-        if (password != null) {
-            dataLogIn.put("password", password);
-        }
+    public static Response loginCourier(LoginModel loginModel) {
         return given()
+                .log().all()
                 .contentType(ContentType.JSON)
-                .body(dataLogIn)
+                .body(loginModel)
                 .when()
-                .post(LOGIN_COURIER_POST);
+                .post(LOGIN_COURIER_POST)
+                .then()
+                .extract().response();
     }
 
     @Step("Получение ID курьера")
     public static Integer getCourierId(String login, String password) {
-        Response response = loginCourier(login, password);
+        LoginModel loginModel = new LoginModel(login, password);
+        Response response = loginCourier(loginModel);
 
         if (response.statusCode() == HTTP_OK) {
             return response.path("id");
